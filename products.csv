@@ -1,0 +1,9 @@
+code;priceref;category;description;brand;imageurl
+discount;0.00;3;not a product. Use to log discount in orders;coffeeworks;
+CaffeineQueen;399.00;2;Caffeine Queen;coffeeworks;
+BrewMaster;199.00;2;BrewMaster;coffeeworks;
+VanillaVelvet;9.00;1;Vanilla Velvet (5/10);coffeeworks;
+MorningBoost;10.00;1;Morning Boost (10/10);coffeeworks;
+MochaMadness;11.00;1;Mocha Madness (6/10);coffeeworks;
+EspressoEnergy;13.00;1;Espresso Energy (8/10);coffeeworks;
+CaramelCream;13.00;1;Caramel Cream (4/10);coffeeworks;
