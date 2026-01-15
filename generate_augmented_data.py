@@ -374,9 +374,9 @@ print(f"   ✓ Structure: {list(wishlist_df.columns)}")
 # STEP 6: GENERATE ABANDONED CARTS (Same structure!)
 # ============================================================================
 
-print("\n🛒 STEP 6: Generating abandoned carts (same structure)...")
+print("\n🛒 STEP 6: Generating abandoned carts (with cartnum)...")
 
-# EXACT COLUMNS: date, cartid, product, quantity, tosend, customer
+# COLUMNS: date, cartid, cartnum, product, quantity, tosend, customer
 abandoned = []
 
 active_customers = recipients_df[
@@ -399,15 +399,19 @@ for idx, customer in active_customers.iterrows():
         num_products = random.choice([1, 1, 2, 3])
         cart_products = random.sample(capsules + machines, num_products)
         
+        # Add cartnum (line number within cart)
+        cart_line = 1
         for product in cart_products:
             abandoned.append({
                 'date': format_date(cart_date),
                 'cartid': cart_id,
+                'cartnum': cart_line,
                 'product': product,
                 'quantity': random.choice([1, 5, 10, 15, 20]),
                 'tosend': 0,
                 'customer': crmid
             })
+            cart_line += 1
         
         if len(abandoned) >= TARGET_ABANDONED:
             break
