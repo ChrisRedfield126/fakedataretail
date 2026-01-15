@@ -23,21 +23,13 @@ wishlist_df = pd.read_csv(DATA_DIR / "wishlist.csv", sep=';', encoding='latin-1'
 purchases_df['date'] = pd.to_datetime(purchases_df['date'], format='%d/%m/%Y %H:%M')
 abandoned_df['date'] = pd.to_datetime(abandoned_df['date'], format='%d/%m/%Y %H:%M')
 
-print("\n1️⃣  CUSTOMER SEGMENT DISTRIBUTION")
+print("\n1️⃣  RECIPIENT DATA")
 print("-" * 80)
-segment_counts = recipients_df['segment'].value_counts().sort_index()
-for segment, count in segment_counts.items():
-    pct = count / len(recipients_df) * 100
-    print(f"   {segment:15} {count:>6,} ({pct:>5.1f}%)")
+print(f"   Total recipients:    {len(recipients_df):>8,}")
+print(f"   Columns: {', '.join(recipients_df.columns)}")
+print(f"   Note: Demographics (segment, country, etc.) tracked in segments table")
 
-print("\n2️⃣  GEOGRAPHIC DISTRIBUTION")
-print("-" * 80)
-country_counts = recipients_df['country'].value_counts()
-for country, count in country_counts.items():
-    pct = count / len(recipients_df) * 100
-    print(f"   {country:15} {count:>6,} ({pct:>5.1f}%)")
-
-print("\n3️⃣  PURCHASE ANALYSIS")
+print("\n2️⃣  PURCHASE ANALYSIS")
 print("-" * 80)
 print(f"   Total orders:        {purchases_df['orderref'].nunique():>8,}")
 print(f"   Total order lines:   {len(purchases_df):>8,}")
@@ -50,7 +42,7 @@ top_products = purchases_df['product'].value_counts().head(5)
 for product, count in top_products.items():
     print(f"      {product:20} {count:>6,} lines")
 
-print("\n4️⃣  VIP TIER DISTRIBUTION")
+print("\n3️⃣  VIP TIER DISTRIBUTION")
 print("-" * 80)
 vip_counts = segments_df['vip'].value_counts().sort_index()
 vip_labels = {-1: 'Invalid/Prospect', 0: 'Standard', 1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Platinum'}
@@ -59,7 +51,7 @@ for tier, count in vip_counts.items():
     label = vip_labels.get(tier, f'Tier {tier}')
     print(f"   {label:15} {count:>6,} ({pct:>5.1f}%)")
 
-print("\n5️⃣  CHURN RISK DISTRIBUTION")
+print("\n4️⃣  CHURN RISK DISTRIBUTION")
 print("-" * 80)
 churn_counts = segments_df['churnprop'].value_counts().sort_index()
 churn_labels = {0: 'Low', 1: 'Medium', 2: 'High', 3: 'Very High'}
@@ -68,22 +60,19 @@ for risk, count in churn_counts.items():
     label = churn_labels.get(risk, f'Risk {risk}')
     print(f"   {label:15} {count:>6,} ({pct:>5.1f}%)")
 
-print("\n6️⃣  SAMPLE DEMO QUERIES")
+print("\n5️⃣  SAMPLE DEMO QUERIES")
 print("-" * 80)
 
-# Query 1: Active high-value customers
-active_vip = recipients_df[
-    (recipients_df['segment'] == 'active_high') & 
-    (recipients_df['owns_machine'] == True)
-]
-print(f"\n   Query 1: Active high-frequency customers with machines")
-print(f"   Result: {len(active_vip):,} customers")
+# Query 1: Get segment info from segments table
+active_high_segments = segments_df[segments_df['vip'] >= 3]  # Gold/Platinum as proxy for "active high value"
+print(f"\n   Query 1: High-value customers (Gold/Platinum VIP)")
+print(f"   Result: {len(active_high_segments):,} customers")
 print(f"   Use case: Premium capsule bundle offers")
 
-# Query 2: Lapsed customers for win-back
-lapsed = recipients_df[recipients_df['segment'] == 'lapsed']
-print(f"\n   Query 2: Lapsed customers (no purchase >6 months)")
-print(f"   Result: {len(lapsed):,} customers")
+# Query 2: Lapsed customers from segments (high churn risk)
+lapsed_segments = segments_df[segments_df['churnprop'] == 3]
+print(f"\n   Query 2: Very high churn risk (no purchase >6 months)")
+print(f"   Result: {len(lapsed_segments):,} customers")
 print(f"   Use case: Win-back campaign with 20% discount")
 
 # Query 3: Recent cart abandoners
@@ -122,16 +111,14 @@ print(f"\n   Query 5: Machine owners without capsule purchase in last 60 days")
 print(f"   Result: {len(needs_replenishment):,} customers")
 print(f"   Use case: Capsule replenishment reminder")
 
-# Query 6: Multi-country VIP customers
+# Query 6: Multi-tier VIP customers
 vip_segments = segments_df[segments_df['vip'] >= 3]
-vip_recipients = recipients_df.merge(vip_segments, left_on='crmid', right_on='customer')
-vip_by_country = vip_recipients['country'].value_counts()
-print(f"\n   Query 6: Gold/Platinum VIP customers by country")
-for country, count in vip_by_country.items():
-    print(f"      {country}: {count:>4,} customers")
-print(f"   Use case: Exclusive VIP offers, language-personalized")
+print(f"\n   Query 6: Gold/Platinum VIP customers")
+print(f"   Result: {len(vip_segments):,} customers")
+print(f"   Use case: Exclusive VIP offers")
+print(f"   Note: Use recipients table join for country/language targeting")
 
-print("\n7️⃣  TEMPORAL PATTERNS")
+print("\n6️⃣  TEMPORAL PATTERNS")
 print("-" * 80)
 
 # Orders by month (last 6 months)
@@ -143,7 +130,7 @@ print(f"\n   Orders by month (Jul 2025 - Jan 2026):")
 for month, count in monthly_orders.items():
     print(f"      {month}: {count:>5,} orders")
 
-print("\n8️⃣  ABANDONED CART RECENCY")
+print("\n7️⃣  ABANDONED CART RECENCY")
 print("-" * 80)
 from datetime import datetime, timedelta
 current_date = pd.Timestamp('2026-01-15')
