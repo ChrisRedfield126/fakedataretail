@@ -1,0 +1,21 @@
+code;priceref;category;description;brand;imageurl
+discount;0.0;3;not a product. Use to log discount in orders;coffeeworks;
+CaffeineQueen;399.0;2;Caffeine Queen;coffeeworks;
+BrewMaster;199.0;2;BrewMaster;coffeeworks;
+VanillaVelvet;9.0;1;Vanilla Velvet (5/10);coffeeworks;
+MorningBoost;10.0;1;Morning Boost (10/10);coffeeworks;
+MochaMadness;11.0;1;Mocha Madness (6/10);coffeeworks;
+EspressoEnergy;13.0;1;Espresso Energy (8/10);coffeeworks;
+CaramelCream;13.0;1;Caramel Cream (4/10);coffeeworks;
+RomaRoast;11.5;1;Roma Roast (9/10);coffeeworks;
+MilanoMagic;12.0;1;Milano Magic (8/10);coffeeworks;
+CapriCappuccino;11.0;1;Capri Cappuccino (6/10);coffeeworks;
+AmericanoBliss;10.5;1;Americano Bliss (7/10);coffeeworks;
+DecafDelight;11.0;1;Decaf Delight (5/10);coffeeworks;
+HazelnutHeaven;12.5;1;Hazelnut Heaven (7/10);javajunction;
+ChocolateCharm;13.0;1;Chocolate Charm (8/10);javajunction;
+IntenseIndulgence;14.0;1;Intense Indulgence (13/13);javajunction;
+DescaleKit;19.0;4;Descaling Kit;coffeeworks;
+CapsuleHolder;29.0;4;Rotating Capsule Holder (40 pods);coffeeworks;
+MilkFrother;89.0;4;Milk Frother;javajunction;
+TravelMug;24.0;4;Insulated Travel Mug;javajunction;
