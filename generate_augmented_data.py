@@ -327,7 +327,7 @@ print(f"   ✓ Structure: {list(purchases_df.columns)}")
 # STEP 5: GENERATE WISHLIST (Same structure!)
 # ============================================================================
 
-print("\n💝 STEP 5: Generating wishlist (same structure)...")
+print("\n💝 STEP 5: Generating wishlist (allows overlap with purchases for conversion tracking)...")
 
 # EXACT COLUMNS: wishListId, wishListName, lastUpdate, creationDate, product, customer
 wishlist = []
@@ -338,21 +338,40 @@ wishlist_candidates = recipients_df.sample(frac=0.15)
 for idx, customer in wishlist_candidates.iterrows():
     crmid = customer['crmid']
     customer_purchases = purchases_df[purchases_df['customer'] == crmid]
-    bought_products = set(customer_purchases['product'].unique())
     
-    available_machines = [p for p in machines if p not in bought_products]
-    available_accessories = [p for p in accessories if p not in bought_products]
-    available = available_machines + available_accessories
+    # Get all machines and accessories (don't filter out purchased items!)
+    # This allows tracking wishlist → purchase conversion
+    available = machines + accessories
     
     if len(available) > 0:
         num_items = random.choice([1, 1, 2])
         selected = random.sample(available, min(num_items, len(available)))
         
         for product in selected:
-            creation_date = random_date(
-                max(customer['_internal_acquisition'], CURRENT_DATE - timedelta(days=180)),
-                CURRENT_DATE
-            )
+            # Wishlist creation date logic:
+            # - If customer bought this product, wishlist was added BEFORE first purchase (aspirational)
+            # - If not bought yet, wishlist is recent (ongoing aspiration)
+            
+            product_purchases = customer_purchases[customer_purchases['product'] == product]
+            
+            if len(product_purchases) > 0:
+                # Product was purchased! Wishlist must be BEFORE first purchase
+                first_purchase_date = pd.to_datetime(product_purchases['date'], format='%d/%m/%Y %H:%M').min()
+                first_purchase_date = first_purchase_date.to_pydatetime()
+                
+                # Wishlist created 7-90 days before first purchase
+                days_before = random.randint(7, 90)
+                creation_date = first_purchase_date - timedelta(days=days_before)
+                
+                # Make sure it's after acquisition
+                creation_date = max(creation_date, customer['_internal_acquisition'])
+            else:
+                # Product not purchased yet - recent wishlist (last 6 months)
+                creation_date = random_date(
+                    max(customer['_internal_acquisition'], CURRENT_DATE - timedelta(days=180)),
+                    CURRENT_DATE
+                )
+            
             last_update = creation_date + timedelta(days=random.randint(0, 30))
             last_update = min(last_update, CURRENT_DATE)
             
