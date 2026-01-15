@@ -378,6 +378,7 @@ print("\n🛒 STEP 6: Generating abandoned carts (with cartnum)...")
 
 # COLUMNS: date, cartid, cartnum, product, quantity, tosend, customer
 abandoned = []
+cart_id_counter = 1  # Sequential cart ID to avoid duplicates
 
 active_customers = recipients_df[
     recipients_df['_internal_segment'].isin(['active_high', 'active_medium', 'occasional'])
@@ -391,7 +392,9 @@ for idx, customer in active_customers.iterrows():
     num_carts = random.randint(1, min(carts_per_customer, 3))
     
     for _ in range(num_carts):
-        cart_id = f'CART{random.randint(100000, 999999)}'
+        cart_id = f'CART{str(cart_id_counter).zfill(6)}'  # Sequential, unique cart ID
+        cart_id_counter += 1
+        
         days_ago = int(np.random.exponential(scale=30))
         days_ago = min(days_ago, 90)
         cart_date = CURRENT_DATE - timedelta(days=days_ago)
